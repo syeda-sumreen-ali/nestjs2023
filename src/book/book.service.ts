@@ -15,6 +15,14 @@ export class BookService {
 
     async findAll(query: Query ):Promise<Book[]>{
         
+        //pagination
+        const resPerPage= 2
+        const currentPage = Number(query.page) || 1
+        const skip = resPerPage * (currentPage - 1 )
+
+
+        //search
+
         //  $and: [ { $or: [{title: regex },{description: regex}] }, {category: value.category}, {city:value.city} ] } 
       let regex= {
                 $regex: query.keyword,
@@ -31,7 +39,10 @@ export class BookService {
        
          
 
-        const book = await this.bookModel.find({...keyword});
+        const book = await this.bookModel
+        .find({...keyword})
+        .limit(resPerPage)
+        .skip(skip);
         return book;
     }
 
